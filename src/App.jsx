@@ -405,7 +405,7 @@ function ProfileModal({ isOpen, onClose, user, onLogout, showSuccessMessage }) {
             </div>
 
             <div className="orders-section">
-                <h3 style={{ marginBottom: '15px', textAlign: 'center' }}>
+                <h3 style={{ marginBottom: '15px', textAlign: 'center', marginTop: '5px' }}>
                     История заказов
                 </h3>
 
