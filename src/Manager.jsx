@@ -11,7 +11,7 @@ function Manager() {
     const [error, setError] = useState(null);
     const [updatingStatus, setUpdatingStatus] = useState({});
 
-    const CustomSelect = ({ value, onChange, options, disabled }) => {
+    const CustomSelect = ({ value, onChange, options, disabled, isLocked }) => {
         const [isOpen, setIsOpen] = useState(false);
         const selectRef = useRef(null);
 
@@ -36,17 +36,21 @@ function Manager() {
         return (
             <div className="custom-select" ref={selectRef}>
                 <div
-                    className={`select-header ${isOpen ? 'open' : ''}`}
-                    onClick={() => !disabled && setIsOpen(!isOpen)}
+                    className={`select-header ${isOpen ? 'open' : ''} ${isLocked ? 'locked' : ''}`}
+                    onClick={() => !disabled && !isLocked && setIsOpen(!isOpen)}
                     style={{
                         backgroundColor: getStatusColor(value),
-                        cursor: disabled ? 'not-allowed' : 'pointer'
+                        cursor: disabled || isLocked ? 'not-allowed' : 'pointer'
                     }}
                 >
                     <span className="select-value">{selectedOption?.label}</span>
-                    <span className="select-arrow">▼</span>
+                    {isLocked ? (
+                        <span className="select-lock">🔒</span>
+                    ) : (
+                        <span className="select-arrow">▼</span>
+                    )}
                 </div>
-                {isOpen && (
+                {isOpen && !isLocked && !disabled && (
                     <div className="select-options">
                         {options.map(option => (
                             <div
@@ -156,6 +160,10 @@ function Manager() {
         { value: 'cancelled', label: 'Отменен' }
     ];
 
+    const isStatusEditable = (status) => {
+        return status !== 'completed' && status !== 'cancelled';
+    };
+
     return (
         <div className="manager-page">
             <div className="manager-container">
@@ -203,7 +211,9 @@ function Manager() {
                                             onChange={(newStatus) => updateOrderStatus(order.id, newStatus)}
                                             options={statusOptions}
                                             disabled={updatingStatus[order.id]}
+                                            isLocked={!isStatusEditable(order.status)}
                                         />
+                                        {updatingStatus[order.id]}
                                     </div>
                                 </div>
 
